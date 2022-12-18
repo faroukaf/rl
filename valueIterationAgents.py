@@ -64,7 +64,36 @@ class ValueIterationAgent(ValueEstimationAgent):
           Run the value iteration algorithm. Note that in standard
           value iteration, V_k+1(...) depends on V_k(...)'s.
         """
-        "*** YOUR CODE HERE ***"
+        for iteration in range(self.iterations):
+            temp = util.Counter()
+
+            # get Q_values for each possible s_prime
+            for state in self.mdp.getStates():
+                #term state i = 0
+                if self.mdp.isTerminal(state):
+                    temp[state] = 0
+                else:
+                    # get act & rew
+                    maximumValue = -1e8
+                    actions = self.mdp.getPossibleActions(state)
+                    for action in actions:
+                        #P & state for transition for action
+                        t = self.mdp.getTransitionStatesAndProbs(state, action)
+                        value = 0
+                        for stateAndProb in t:
+                            value += stateAndProb[1] * (self.mdp.getReward(
+                                state,
+                                action,
+                                stateAndProb[1]
+                            )) + self.discount * self.values[stateAndProb[0]]
+
+                            maximumValue = max(value, maximumValue)
+
+                    if maximumValue != -1e8:
+                        temp[state] = maximumValue
+                    
+            self.values = temp
+
 
     def getValue(self, state):
         """
@@ -78,6 +107,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
+        qValue = 0
+        for stateAndProb in self.mdp.getTransitionStatesAndProbs(state, action):
+            qValue += stateAndProb[1] * (self.mdp.getReward(
+                state,
+                action,
+                stateAndProb[1]
+            )) + self.discount * self.values[stateAndProb[0]]
+        return qValue
         util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
