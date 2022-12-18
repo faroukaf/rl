@@ -115,7 +115,6 @@ class ValueIterationAgent(ValueEstimationAgent):
                 stateAndProb[1]
             )) + self.discount * self.values[stateAndProb[0]]
         return qValue
-        util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
@@ -127,7 +126,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.mdp.isTerminal(state):
+            return None
+        actions = self.mdp.getPossibleActions(state)
+        
+        # value for all action
+        allActions = {}
+        for action in actions:
+            allActions[action] = self.computeQValueFromValues(state, action)
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
